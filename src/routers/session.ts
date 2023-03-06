@@ -29,7 +29,10 @@ export function parseJwtUserId(jwtoken: string): number | undefined {
 	return payload.userId
 }
 
-async function isUserValid(user: User | null, loginData: any): Promise<boolean> {
+async function isUserValid(
+	user: User | null,
+	loginData: any
+): Promise<boolean> {
 	if (user == undefined) return false
 	return await bcrypt.compare(loginData.password, user.password)
 }
@@ -45,7 +48,6 @@ async function createUser(email: string, password: string) {
 			email: email,
 			password: password,
 			name: "",
-			picture_path: "",
 			created_at: new Date(),
 			updated_at: new Date(),
 		},
@@ -77,7 +79,9 @@ export const userRouterPostLogin: RequestHandler = async (req, res) => {
 		return
 	}
 
-	const jwtToken = jwt.sign({ userId: user?.id }, getJwtSecret(), { expiresIn: "1h" })
+	const jwtToken = jwt.sign({ userId: user?.id }, getJwtSecret(), {
+		expiresIn: "1h",
+	})
 	res.cookie("jwt", jwtToken, {
 		httpOnly: true,
 		secure: true,

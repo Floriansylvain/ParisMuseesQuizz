@@ -10,7 +10,10 @@ export const queryPaginationParser = z.object({
 	take: z.coerce.number().optional().default(10),
 })
 
-export function getPaginationLinks(query: Pagination, routeName: string): object {
+export function getPaginationLinks(
+	query: Pagination,
+	routeName: string
+): object {
 	const nextStart = query.skip + query.take
 	const prevStart = Math.max(0, query.skip - query.take)
 

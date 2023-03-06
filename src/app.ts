@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 
+import sessionRouter from "./routers/session"
+
 import { getJwtSecret } from "./utils/jwt.js"
 
 const authMiddleware: RequestHandler = (req, res, next) => {
@@ -55,7 +57,6 @@ export function initServer(): express.Express {
 	appRouter.get("/", appRouterGet)
 
 	appRouter.use("/session/", sessionRouter)
-	appRouter.use("/user/", authMiddleware, userRouter)
 
 	app.use("/v1/", appRouter)
 
@@ -63,5 +64,7 @@ export function initServer(): express.Express {
 }
 
 export function startServer(app: express.Express): void {
-	app.listen(process.env.API_PORT, () => console.log(`Listening on port ${process.env.API_PORT}`))
+	app.listen(process.env.API_PORT, () =>
+		console.log(`Listening on port ${process.env.API_PORT}`)
+	)
 }
