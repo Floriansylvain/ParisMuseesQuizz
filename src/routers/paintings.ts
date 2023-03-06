@@ -35,6 +35,23 @@ async function fetchPainting(uuid: string): Promise<unknown> {
 	})
 }
 
+async function getRandomUUIDs(limit: number): Promise<unknown[]> {
+	const paintingsUUIDs = JSON.parse(
+		fs.readFileSync("src/assets/paintingsUUID.json", "utf8")
+	)
+	const randomUUIDs = paintingsUUIDs.paintings
+		.sort(() => Math.random() - 0.5)
+		.slice(0, limit)
+
+	const paintings = []
+	for (const uuid of randomUUIDs) {
+		const painting = await fetchPainting(uuid)
+		paintings.push(painting)
+	}
+
+	return paintings
+}
+
 const paintingRouterGet: RequestHandler = async (req, res) => {
 	const parsedPainting = paintingParser.safeParse(req.params)
 	if (!parsedPainting.success) {
@@ -56,20 +73,9 @@ const paintingRouterGetRandoms: RequestHandler = async (req, res) => {
 		return
 	}
 
-	const paintingsUUIDs = JSON.parse(
-		fs.readFileSync("src/assets/paintingsUUID.json", "utf8")
-	)
-	const randomUUIDs = paintingsUUIDs.paintings
-		.sort(() => Math.random() - 0.5)
-		.slice(0, parsedPainting.data.limit)
-
-	const paintings = []
-	for (const uuid of randomUUIDs) {
-		const painting = await fetchPainting(uuid)
-		paintings.push(painting)
-	}
-
-	res.send({ paintings })
+	res.send({
+		paintings: await getRandomUUIDs(parsedPainting.data.limit),
+	})
 }
 
 paintingsRouter.get("/:uuid", paintingRouterGet)
