@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 
-import sessionRouter from "./routers/session"
+import sessionRouter from "./routers/session.js"
+import paintingsRouter from "./routers/paintings.js"
 
 import { getJwtSecret } from "./utils/jwt.js"
 
@@ -31,7 +32,12 @@ const appRouterGet: RequestHandler = (req, res) => {
 
 function initEnvVariables(): void {
 	dotenv.config()
-	const varsToCheck = ["API_PORT", "FRONT_ORIGIN"]
+	const varsToCheck = [
+		"API_PORT",
+		"FRONT_ORIGIN",
+		"JWT_SECRET",
+		"PARISMUSEES_SECRET",
+	]
 
 	varsToCheck.forEach((varName) => {
 		const variable = process.env[varName]
@@ -57,6 +63,7 @@ export function initServer(): express.Express {
 	appRouter.get("/", appRouterGet)
 
 	appRouter.use("/session/", sessionRouter)
+	appRouter.use("/paintings/", paintingsRouter)
 
 	app.use("/v1/", appRouter)
 
