@@ -1,0 +1,22 @@
+<diagram program="umletino" version="15.0.0"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>200</x><y>170</y><w>210</w><h>120</h></coordinates><panel_attributes>USER
+--
+_id: INT_
+email: VARCHAR
+password: VARCHAR
+name: VARCHAR
+created_at: DATE
+updated_at: DATE</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>200</x><y>340</y><w>210</w><h>90</h></coordinates><panel_attributes>AUTHOR
+--
+_id: INT_
+fullname: VARCHAR
+created_at: DATE
+updated_at: DATE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>400</x><y>380</y><w>130</w><h>40</h></coordinates><panel_attributes>m1=1
+m2=0..*</panel_attributes><additional_attributes>10;10;110;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>510</x><y>360</y><w>130</w><h>60</h></coordinates><panel_attributes>AUTHOR_PAINTING
+--
+_author_id: INT_
+_painting_id: INT_</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>560</x><y>280</y><w>50</w><h>100</h></coordinates><panel_attributes>m1=1
+m2=0..*</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>UMLClass</id><coordinates><x>510</x><y>210</y><w>130</w><h>80</h></coordinates><panel_attributes>PAINTING
+--
+_id: INT_
+name: VARCHAR
+image_url: VARCHAR</panel_attributes><additional_attributes></additional_attributes></element></diagram>

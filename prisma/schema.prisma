@@ -15,3 +15,27 @@ model User {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 }
+
+model Author {
+    id             Int              @id @default(autoincrement())
+    fullname       String
+    created_at     DateTime         @default(now())
+    updated_at     DateTime         @updatedAt
+    PaintingAuthor PaintingAuthor[]
+}
+
+model Painting {
+    id             Int              @id @default(autoincrement())
+    name           String
+    image_url      String
+    PaintingAuthor PaintingAuthor[]
+}
+
+model PaintingAuthor {
+    painting    Painting @relation(fields: [painting_id], references: [id])
+    painting_id Int
+    author      Author   @relation(fields: [author_id], references: [id])
+    author_id   Int
+
+    @@id([painting_id, author_id])
+}
