@@ -9,7 +9,6 @@ export function getPaintingQuery(uuid: string) {
       ... on NodeOeuvre {
         title
         absolutePath
-        fieldUrlAlias
         fieldOeuvreAuteurs {
           entity {
             fieldAuteurAuteur {
@@ -22,7 +21,6 @@ export function getPaintingQuery(uuid: string) {
         fieldVisuels {
           entity {
             name
-            vignette
             publicUrl
           }
         }
