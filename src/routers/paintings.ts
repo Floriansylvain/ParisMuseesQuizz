@@ -219,7 +219,7 @@ async function updatePaintingIfNeeded(
 		paintingMusuem?.name !== parsedPainting.musuem ||
 		paintingAuthors?.[0]?.fullname !== parsedPainting.author
 	) {
-		updatePainting(painting.id, parsedPainting)
+		await updatePainting(painting.id, parsedPainting)
 	}
 }
 
