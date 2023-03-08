@@ -10,5 +10,4 @@ ADD src ./src/
 ADD prisma ./prisma/
 
 RUN npm ci
-RUN npx prisma generate
-CMD npm start
+CMD npx prisma migrate deploy && npm start
