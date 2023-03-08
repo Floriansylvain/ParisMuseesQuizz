@@ -85,14 +85,42 @@ function fetchPainting(uuid: string): Promise<GraphQlPainting> {
 	})
 }
 
-async function getRandomPaintings(limit: number): Promise<(Painting | null)[]> {
-	const paintingsUUIDs = JSON.parse(fs.readFileSync("src/assets/paintingsUUID.json", "utf8"))
-	const randomUUIDs = paintingsUUIDs.paintings.sort(() => Math.random() - 0.5).slice(0, limit)
+async function getPaintingAuthorFullname(painting: Painting): Promise<string> {
+	const authorId = (
+		await prisma.paintingAuthor.findMany({
+			where: { painting_id: painting.id },
+			select: { author_id: true },
+		})
+	)[0]?.author_id
 
+	return (await prisma.author.findUnique({ where: { id: authorId } }))?.fullname || ""
+}
+
+async function auhtorAlreadyInPaintings(
+	paintings: Painting[],
+	painting: ParsedPainting
+): Promise<boolean> {
+	for (const p of paintings) {
+		if ((await getPaintingAuthorFullname(p)) === painting.author) return true
+	}
+	return false
+}
+
+function getShuffledUUIDs() {
+	const paintingsUUIDs = JSON.parse(fs.readFileSync("src/assets/paintingsUUID.json", "utf8"))
+	return paintingsUUIDs.paintings.sort(() => Math.random() - 0.5)
+}
+
+async function getRandomPaintings(limit: number): Promise<(Painting | null)[]> {
+	const randomUUIDs = getShuffledUUIDs()
 	const paintings = []
-	for (const uuid of randomUUIDs) {
-		const fetchedPainting = await fetchPainting(uuid)
+	let i = 0
+
+	while (paintings.length < limit && i < randomUUIDs.length) {
+		const fetchedPainting = await fetchPainting(randomUUIDs[i++])
 		const parsedPainting = parseGraphQlPainting(fetchedPainting)
+
+		if (await auhtorAlreadyInPaintings(paintings as Painting[], parsedPainting)) continue
 
 		const painting = await getPainting(undefined, parsedPainting.name)
 		if (!painting) {
