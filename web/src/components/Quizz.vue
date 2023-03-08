@@ -1,23 +1,6 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from "vue"
-
-interface AuthorData {
-	author: {
-		id: number
-		fullname: string
-		created_at: string
-		updated_at: string
-	}
-}
-
-interface Painting {
-	id: number
-	name: string
-	image_url: string
-	link: string
-	musuemId: number
-	PaintingAuthor: AuthorData[]
-}
+import { AuthorData, fetchRandomPainting, Painting } from "../utils/apiFetch"
 
 const emits = defineEmits(["win", "lose"])
 const props = defineProps<{ disabled: boolean }>()
@@ -25,17 +8,8 @@ const props = defineProps<{ disabled: boolean }>()
 const paintings: Ref<Painting[]> = ref([])
 const winningPainting: Ref<Painting> = ref({} as Painting)
 
-function fetchRandomPainting(): Promise<{ paintings: Painting[] }> {
-	return new Promise((resolve, reject) => {
-		fetch(`${__APP_ENV__.API_ADDRESS}/paintings/random/4`)
-			.then((response) => response.json())
-			.then((data) => resolve(data))
-			.catch((error) => reject(error))
-	})
-}
-
 async function initPaintings(): Promise<void> {
-	const fetchedData = await fetchRandomPainting()
+	const fetchedData = await fetchRandomPainting(4)
 	paintings.value = fetchedData.paintings
 }
 
@@ -44,10 +18,20 @@ function setWinningPainting(): void {
 	winningPainting.value = paintings.value[randomIndex]
 }
 
-function authorClickHandler(auhtorId: number): void {
-	if (auhtorId === winningPainting.value.PaintingAuthor[0].author.id) {
+function setElementClassById(id: string, cssClass: string): void {
+	document.getElementById(id)?.classList.add(cssClass)
+}
+
+function authorClickHandler(authorData: AuthorData): void {
+	if (authorData.author.fullname === winningPainting.value.PaintingAuthor[0].author.fullname) {
+		setElementClassById(authorData.author.fullname, "button-success")
 		emits("win")
 	} else {
+		setElementClassById(authorData.author.fullname, "button-fail")
+		setElementClassById(
+			winningPainting.value.PaintingAuthor[0].author.fullname,
+			"button-neutral"
+		)
 		emits("lose")
 	}
 }
@@ -68,7 +52,8 @@ onMounted(async () => {
 		<div class="choices">
 			<button
 				v-for="painting of paintings"
-				@click="() => authorClickHandler(painting.PaintingAuthor[0].author.id)"
+				@click="() => authorClickHandler({ author: painting.PaintingAuthor[0].author })"
+				:id="painting.PaintingAuthor[0].author.fullname"
 				type="button"
 				:disabled="disabled"
 			>

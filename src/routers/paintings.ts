@@ -175,7 +175,7 @@ async function getPainting(id?: number, name?: string): Promise<Painting | null>
 
 	return await prisma.painting.findUnique({
 		where: id ? { id } : { name },
-		include: { PaintingAuthor: { select: { author: true } } },
+		include: { PaintingAuthor: { select: { author: true } }, Musuem: true },
 	})
 }
 
