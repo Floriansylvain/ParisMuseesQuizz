@@ -1,81 +1,101 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from "vue"
+import Quizz from "../components/Quizz.vue"
 
-interface AuthorData {
-	author: {
-		id: number
-		fullname: string
-		created_at: string
-		updated_at: string
-	}
+const gameMessage = ref("choisissez une réponse")
+const gameProgression = ref(1)
+const gameProgressionMax = 10
+const gameScore = ref(0)
+const gameShouldGoNext = ref(false)
+
+function gameHandler(callback: () => void): void {
+	if (gameShouldGoNext.value) return
+	gameShouldGoNext.value = true
+
+	callback()
 }
 
-interface Painting {
-	id: number
-	name: string
-	image_url: string
-	link: string
-	musuemId: number
-	PaintingAuthor: AuthorData[]
+function winHandler(): void {
+	gameMessage.value = "Bonne réponse !"
+	gameScore.value += 1
 }
 
-const paintings: Ref<Painting[]> = ref([])
-const winningPainting: Ref<Painting> = ref({} as Painting)
-const gameMessage = ref("")
-
-function fetchRandomPainting(): Promise<{ paintings: Painting[] }> {
-	return new Promise((resolve, reject) => {
-		fetch(`${__APP_ENV__.API_ADDRESS}/paintings/random/4`)
-			.then((response) => response.json())
-			.then((data) => resolve(data))
-			.catch((error) => reject(error))
-	})
+function loseHandler(): void {
+	gameMessage.value = "Mauvaise réponse"
 }
 
-async function initPaintings(): Promise<void> {
-	const fetchedData = await fetchRandomPainting()
-	paintings.value = fetchedData.paintings
+function nextGame(): void {
+	if (!gameShouldGoNext.value) return
+	gameShouldGoNext.value = false
+
+	gameMessage.value = "choisissez une réponse"
+	gameProgression.value += 1
 }
 
-function setWinningPainting(): void {
-	const randomIndex = Math.floor(Math.random() * paintings.value.length)
-	winningPainting.value = paintings.value[randomIndex]
+function resetGame(): void {
+	gameMessage.value = "choisissez une réponse"
+	gameProgression.value = 1
+	gameScore.value = 0
 }
-
-function authorClickHandler(auhtorId: number): void {
-	if (auhtorId === winningPainting.value.PaintingAuthor[0].author.id) {
-		gameMessage.value = "Correct!"
-	} else {
-		gameMessage.value = "Wrong!"
-	}
-}
-
-async function initGame(): Promise<void> {
-	await initPaintings()
-	setWinningPainting()
-	gameMessage.value = "What is the author of this painting?"
-}
-
-onMounted(async () => {
-	await initGame()
-})
 </script>
 
 <template>
-	<img :src="winningPainting?.image_url" />
-	<button
-		v-for="painting of paintings"
-		@click="() => authorClickHandler(painting.PaintingAuthor[0].author.id)"
-		type="button"
-	>
-		{{ painting.PaintingAuthor[0].author.fullname }}
-	</button>
-	<p>{{ gameMessage }}</p>
-	<button type="button" @click="initGame">Next</button>
+	<div class="container">
+		<template v-if="gameProgression < gameProgressionMax">
+			<p>Quiz ({{ gameProgression }}/{{ gameProgressionMax }})</p>
+			<h2>Qui a peint cette oeuvre ?</h2>
+
+			<Quizz
+				@win="() => gameHandler(winHandler)"
+				@lose="() => gameHandler(loseHandler)"
+				:key="gameProgression"
+				:disabled="gameShouldGoNext"
+			></Quizz>
+			<div class="quizz-footer">
+				<p>{{ gameMessage }}</p>
+				<button type="button" @click="nextGame" :disabled="!gameShouldGoNext">
+					suivant
+				</button>
+			</div>
+		</template>
+
+		<div class="game-over" v-else>
+			<p>Vous avez {{ gameScore }}/{{ gameProgressionMax }} bonnes réponses !</p>
+			<button type="button" @click="resetGame">rejouer</button>
+		</div>
+	</div>
 </template>
 
 <style scoped>
-img {
-	width: 200px;
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+
+	width: 100%;
+	max-width: 350px;
+}
+
+.container > p,
+.container > h2 {
+	margin: 0;
+}
+
+.container > p {
+	text-align: center;
+}
+
+.quizz-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.game-over {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	justify-content: center;
+	align-items: center;
 }
 </style>
