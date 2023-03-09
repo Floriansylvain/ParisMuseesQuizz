@@ -3,6 +3,7 @@
 ## Environment variable
 
 -   API_PORT
+-   API_BASE_PATH
 -   FRONT_ORIGIN
 -   JWT_SECRET
 -   MYSQL_ROOT_PASSWORD

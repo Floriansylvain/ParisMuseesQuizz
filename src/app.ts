@@ -37,6 +37,7 @@ function initEnvVariables(): void {
 		"FRONT_ORIGIN",
 		"JWT_SECRET",
 		"PARISMUSEES_SECRET",
+		"API_BASE_PATH",
 	]
 
 	varsToCheck.forEach((varName) => {
@@ -65,13 +66,11 @@ export function initServer(): express.Express {
 	appRouter.use("/session/", sessionRouter)
 	appRouter.use("/paintings/", paintingsRouter)
 
-	app.use("/v1/", appRouter)
+	app.use(process.env.API_BASE_PATH + "/", appRouter)
 
 	return app
 }
 
 export function startServer(app: express.Express): void {
-	app.listen(process.env.API_PORT, () =>
-		console.log(`Listening on port ${process.env.API_PORT}`)
-	)
+	app.listen(process.env.API_PORT, () => console.log(`Listening on port ${process.env.API_PORT}`))
 }
