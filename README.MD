@@ -12,6 +12,8 @@
 ### For website
 
 -   API_ADDRESS
+-   FRONT_PORT
+-   FRONT_BASE_PATH
 
 ## Usage
 

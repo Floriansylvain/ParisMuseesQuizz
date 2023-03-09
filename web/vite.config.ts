@@ -21,5 +21,6 @@ export default defineConfig(({ command, mode }): UserConfig => {
 				...env2,
 			},
 		},
+		base: env1.FRONT_BASE_PATH ?? env2.FRONT_BASE_PATH ?? "/",
 	}
 })
