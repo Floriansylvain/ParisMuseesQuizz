@@ -9,6 +9,10 @@
 -   DATABASE_URL `not needed when docker`
 -   PARISMUSEES_SECRET
 
+### For website
+
+-   API_ADDRESS
+
 ## Usage
 
 ### With Docker
